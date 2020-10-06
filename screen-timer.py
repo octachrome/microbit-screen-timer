@@ -1,7 +1,17 @@
+"""This is a screen timer I wrote for the BBC microbit, because I was tired of telling
+them when to stop playing on their phones. Connect a buzzer between pin 0 and ground.
+Copy and paste the source code into https://python.microbit.org/v/2.0 then download the
+hex. Press the A/B buttons to increase/decrease the interval in units of 15 minutes.
+The remaining time is shown by the LEDs: each LED represents 5 minutes. When there is
+less than 10 minutes left, the display shows the remaining minutes as a digit. The
+buzzer sounds at half-time, on every minute for the last five minutes, and then
+continuously when the time is up."""
+
 import utime
 from microbit import *
 
 class Schedule:
+    """Run some code with the given interval (in ms)"""
     def __init__(self, interval=1000):
         self.interval = interval
         self.last_update_ticks = utime.ticks_ms()
@@ -21,6 +31,7 @@ class Schedule:
         pass
 
 class Alarm(Schedule):
+    """Sends a repeating pattern of 1s and 0s to pin 0"""
     def __init__(self, pattern, repeat=False, interval=100):
         super().__init__(interval)
         self.pattern = pattern
@@ -46,13 +57,14 @@ class Alarm(Schedule):
                 self.active = None
 
 class Timer(Schedule):
+    """The main countdown timer"""
     def __init__(self):
         super().__init__(60000)
         self.mins_left = None
-        self.button_alarm = Alarm("110")
-        self.half_time_alarm = Alarm("111000111000111000")
-        self.countdown_alarm = Alarm("1010")
-        self.final_alarm = Alarm("111000", True)
+        self.button_alarm = Alarm("110")        # Sounds when a button is pressed
+        self.half_time_alarm = Alarm("111000111000111000")  # Sounds at half time
+        self.countdown_alarm = Alarm("1010")    # Sounds in the last 5 minutes
+        self.final_alarm = Alarm("111000", True)    # Sounds when the timer ends
         self.half_time = None
 
     def _draw(self):
