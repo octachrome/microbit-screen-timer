@@ -49,6 +49,7 @@ class Timer(Schedule):
     def __init__(self):
         super().__init__(60000)
         self.mins_left = None
+        self.button_alarm = Alarm("110")
         self.half_time_alarm = Alarm("111000111000111000")
         self.countdown_alarm = Alarm("1010")
         self.final_alarm = Alarm("111000", True)
@@ -72,10 +73,11 @@ class Timer(Schedule):
 
     def start(self, mins):
         self.mins_left = mins
+        self.button_alarm.set()
         self.half_time_alarm.reset()
         self.countdown_alarm.reset()
         self.final_alarm.reset()
-        if mins >= 20:
+        if mins >= 30:
             self.half_time = mins // 2
         else:
             self.half_time = None
@@ -84,6 +86,7 @@ class Timer(Schedule):
 
     def tick(self):
         super().tick()
+        self.button_alarm.tick()
         self.half_time_alarm.tick()
         self.countdown_alarm.tick()
         self.final_alarm.tick()
